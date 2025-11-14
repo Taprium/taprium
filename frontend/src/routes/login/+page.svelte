@@ -30,17 +30,17 @@
 			<form class="flex flex-col space-y-6" on:submit|preventDefault={SignIn}>
 				<h3 class="p-0 text-xl font-medium text-gray-900 dark:text-white">Login</h3>
 				<Label class="space-y-2">
-					<span>Your email</span>
+					<span>Username</span>
 					<Input
-						type="email"
-						name="email"
-						placeholder="name@company.com"
+						type="text"
+						name="username"
+						placeholder="username"
 						required
 						bind:value={email}
 					/>
 				</Label>
 				<Label class="space-y-2">
-					<span>Your password</span>
+					<span>Password</span>
 					<Input
 						type="password"
 						name="password"
