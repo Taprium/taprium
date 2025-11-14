@@ -1,0 +1,31 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: build docker image and push
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      repo: source.im404.me/ai-shared/jyut-shorts-pb
+      registry: source.im404.me
+      tags:
+        - latest
+# - name: build arm64 docker image and push
+#   image: owncloudci/drone-docker-buildx
+#   privileged: true
+#   settings:
+#     dry_run: true
+#     username:
+#       from_secret: docker_username
+#     password:
+#       from_secret: docker_password
+#     repo: source.im404.me/noiseroute/api.noiseroute.com-pb
+#     registry: source.im404.me
+#     platforms:
+#     - linux/amd64
+#     - linux/arm64
+#     tags:
+#     - latest

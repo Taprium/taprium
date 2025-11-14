@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
@@ -42,6 +43,16 @@ func main() {
 				hooks.GenerateImage(app, e.Record)
 			}
 		}()
+		return e.Next()
+	})
+
+	// update runner pinged_at
+	app.OnRecordAuthRequest("upscale_runners").BindFunc(func(e *core.RecordAuthRequestEvent) error {
+		go func() {
+			e.Record.Set("pinged_at", time.Now())
+			app.Save(e.Record)
+		}()
+
 		return e.Next()
 	})
 
