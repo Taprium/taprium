@@ -26,6 +26,8 @@ func main() {
 	})
 
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
+		app.Settings().Batch.Enabled = true
+		app.Settings().Batch.MaxRequests = 100
 		// serves static files from the provided public dir (if exists)
 		se.Router.GET("/{path...}", apis.Static(os.DirFS("./pb_public"), false))
 
