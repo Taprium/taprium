@@ -83,6 +83,7 @@
 	async function handleAddRummer(e: SubmitEvent) {
 		e.preventDefault();
 		await pb.collection(PB_COLLECTION_UPSCALE_RUNNERS).create({
+			verified: true,
 			name: addRunnerNameValue,
 			enabled: addRunnerEnabled,
 			password: addRunnerPasswordValue,
