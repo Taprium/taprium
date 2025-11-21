@@ -6,7 +6,20 @@
 		PB_COLLECTION_GENERATE_QUEUES,
 		PB_COLLECTION_GENERATED_IMAGES
 	} from '$lib/pb/backend-pb';
-	import { Badge, Button, Card, Heading, Hr, Img, Modal, Spinner, Toggle } from 'flowbite-svelte';
+	import { GetDefaultSettings } from '$lib/pb/default-settings';
+	import {
+		Badge,
+		Button,
+		Card,
+		Heading,
+		Hr,
+		Img,
+		Input,
+		Label,
+		Modal,
+		Spinner,
+		Toggle
+	} from 'flowbite-svelte';
 	import { Section } from 'flowbite-svelte-blocks';
 	import { RefreshOutline } from 'flowbite-svelte-icons';
 	import { type RecordModel } from 'pocketbase';
@@ -14,6 +27,7 @@
 
 	let loading = $state(false);
 	let queueData = $state<RecordModel>();
+	let defaultSettings = $state<RecordModel>();
 
 	async function GetQueueData() {
 		loading = true;
@@ -24,23 +38,27 @@
 			});
 		} catch {}
 		await tick();
+		refreshUpscaleButtonDisabled();
 		loading = false;
 	}
 
 	onMount(() => {
 		GetQueueData();
+		GetDefaultSettings().then((v) => (defaultSettings = v));
 	});
 
 	let showConfirmUpscaleModal = $state(false);
 	let disableUpscaleSelectedButton = $state(true);
+	let upscaleTimes = $state(1);
 	function refreshUpscaleButtonDisabled() {
 		const selectedImages = queueData?.expand?.generated_images_via_queue?.filter(
 			(x: RecordModel) => x.selected
 		);
-		disableUpscaleSelectedButton = selectedImages.length == 0;
+		disableUpscaleSelectedButton = (selectedImages?.length ?? 0) == 0;
 	}
 
-	async function HandleConfirmUpscale() {
+	async function HandleConfirmUpscale(e: SubmitEvent) {
+		e.preventDefault();
 		loading = true;
 
 		const batch = pb.createBatch();
@@ -54,7 +72,8 @@
 			}
 		});
 		batch.collection(PB_COLLECTION_GENERATE_QUEUES).update(queueData!.id, {
-			user_confirmed_upscale: true
+			user_confirmed_upscale: true,
+			upscale_times: upscaleTimes
 		});
 		await batch.send();
 
@@ -73,7 +92,9 @@
 	{:else if queueData != undefined}
 		<div class="flex items-center justify-between">
 			<Heading>Prompts</Heading>
-			<Button onclick={GetQueueData}><RefreshOutline /></Button>
+			<div>
+				<Button onclick={GetQueueData} color="alternative"><RefreshOutline /></Button>
+			</div>
 		</div>
 		<br />
 		<Card class="bg-green-500 p-4 " size="xl">
@@ -97,16 +118,29 @@
 		<br />
 		Status: {queueData.status}
 		<br />
-		Upscale confirmed: {queueData.user_confirmed_upscale}
+		Upscale Confirmed: {queueData.user_confirmed_upscale}
+		<br />
+		Size: {queueData.width} W * {queueData.height} H
+		<br />
+		Queued Image Number: {queueData.number}
+		<br />
+		Upscale Confirmed: {queueData.user_confirmed_upscale}
+		{#if queueData.user_confirmed_upscale}
+			<br />
+			Upscale Times: {queueData.upscale_times}
+		{/if}
 
 		<Hr />
 
 		<div class="flex items-center justify-between">
-			<Heading>Images</Heading>
+			<Heading
+				>Images [ {queueData.expand?.generated_images_via_queue?.length ?? 0}/{queueData.number} ]</Heading
+			>
 			<Button
 				color="cyan"
 				disabled={disableUpscaleSelectedButton}
 				onclick={() => {
+					upscaleTimes = defaultSettings?.upscale_times ?? 2;
 					showConfirmUpscaleModal = true;
 				}}
 			>
@@ -147,10 +181,18 @@
 
 <Modal title="Confirm Upscale?" bind:open={showConfirmUpscaleModal}>
 	<p>Unselected images will be deleted, the deletion was not recoverable.</p>
-	{#snippet footer()}
-		<Button onclick={HandleConfirmUpscale}>Yes</Button>
-		<Button value="decline" color="alternative" onclick={() => (showConfirmUpscaleModal = false)}
-			>Cancel</Button
-		>
-	{/snippet}
+	<form class="flex flex-col space-y-6" onsubmit={HandleConfirmUpscale}>
+		<div>
+			<Label class="space-y-2">
+				<span>Default Upscale Times</span>
+				<Input type="number" min={1} bind:value={upscaleTimes} required />
+			</Label>
+		</div>
+		<div>
+			<Button type="submit">Yes</Button>
+			<Button value="decline" color="alternative" onclick={() => (showConfirmUpscaleModal = false)}>
+				Cancel
+			</Button>
+		</div>
+	</form>
 </Modal>

@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import CSRPagination from '$lib/components/CSRPagination.svelte';
 	import { pb, PB_COLLECTION_GENERATE_QUEUES } from '$lib/pb/backend-pb';
+	import { GetDefaultSettings } from '$lib/pb/default-settings';
 	import {
 		Badge,
 		Button,
@@ -16,7 +17,8 @@
 		TableBodyCell,
 		TableBodyRow,
 		TableHead,
-		TableHeadCell
+		TableHeadCell,
+		Textarea
 	} from 'flowbite-svelte';
 	import { Section } from 'flowbite-svelte-blocks';
 	import type { ListResult, RecordModel } from 'pocketbase';
@@ -25,6 +27,7 @@
 	let loading = $state(false);
 	let showAddModal = $state(false);
 	let queues = $state<ListResult<RecordModel>>();
+	let defaultSetting = $state<RecordModel>();
 	let pageIndex = $state(1);
 
 	async function GetQueues() {
@@ -42,10 +45,15 @@
 
 	onMount(() => {
 		GetQueues();
+		GetDefaultSettings().then((v) => {
+			defaultSetting = v;
+		});
 	});
 
 	let addQueuePositive = $state('');
 	let addQueueNegative = $state('');
+	let addQueueHeight = $state(0);
+	let addQueueWidth = $state(0);
 	let addQueueNumber = $state(1);
 	let addQueueLoading = $state(false);
 
@@ -56,9 +64,11 @@
 			positive_prompt: addQueuePositive,
 			negative_prompt: addQueueNegative,
 			number: addQueueNumber,
+			width: addQueueWidth,
+			height: addQueueHeight,
 			status: 'queue'
 		});
-		goto(`/img_gen/edit?id=${record.id}`);
+		goto(`/img_gen/view?id=${record.id}`);
 	}
 </script>
 
@@ -77,6 +87,8 @@
 					addQueuePositive = '';
 					addQueueNegative = '';
 					addQueueNumber = 1;
+					addQueueWidth = defaultSetting?.img_width ?? 0;
+					addQueueHeight = defaultSetting?.img_height ?? 0;
 					showAddModal = true;
 				}}>Add</Button
 			>
@@ -94,6 +106,7 @@
 		<Table>
 			<TableHead>
 				<TableHeadCell>prompt</TableHeadCell>
+				<TableHeadCell>size</TableHeadCell>
 				<TableHeadCell>number</TableHeadCell>
 				<TableHeadCell>status</TableHeadCell>
 				<TableHeadCell>queue at</TableHeadCell>
@@ -113,6 +126,9 @@
 							</div>
 						</TableBodyCell>
 						<TableBodyCell>
+							{q.width} W * {q.height} H
+						</TableBodyCell>
+						<TableBodyCell>
 							Generated: {q.expand?.generated_images_via_queue?.length ?? 0}
 							<br />
 							Requested: {q.number}
@@ -127,6 +143,8 @@
 									addQueueLoading = false;
 									addQueuePositive = q.positive_prompt;
 									addQueueNegative = q.negative_prompt;
+									addQueueWidth = q.width;
+									addQueueHeight = q.height;
 									addQueueNumber = 1;
 									showAddModal = true;
 								}}>Queue More</Button
@@ -151,18 +169,28 @@
 		<Spinner />
 	{:else}
 		<form onsubmit={HandleAddQueue}>
-			<div class="flex flex-col space-y-6">
+			<div class="mb-2 flex flex-col space-y-6">
 				<Label class="space-y-2">
-					<span>Positive Prompt</span>
-					<Input type="text" required bind:value={addQueuePositive} />
+					<Badge color="green" border>Positive Prompt</Badge>
+					<!-- <Input type="text" required bind:value={addQueuePositive} /> -->
+					<Textarea bind:value={addQueuePositive} rows={4} class="w-full" />
 				</Label>
 				<Label class="space-y-2">
-					<span>Negative Prompt</span>
-					<Input type="text" bind:value={addQueueNegative} />
+					<Badge color="red" border>Negative Prompt</Badge>
+					<!-- <Input type="text" bind:value={addQueueNegative} /> -->
+					<Textarea bind:value={addQueueNegative} rows={4} class="w-full" />
 				</Label>
 				<Label class="space-y-2">
 					<span>Generate Image Count</span>
 					<Input type="number" min={1} required bind:value={addQueueNumber} />
+				</Label>
+				<Label class="space-y-2">
+					<span>Image Width</span>
+					<Input type="number" min={512} required bind:value={addQueueWidth} />
+				</Label>
+				<Label class="space-y-2">
+					<span>Image Height</span>
+					<Input type="number" min={512} required bind:value={addQueueHeight} />
 				</Label>
 			</div>
 			<Button type="submit">Submit</Button>

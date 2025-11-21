@@ -51,18 +51,21 @@
 			<Button href="/login">Login</Button>
 		{/if}
 	</div>
-	<Dropdown placement="bottom" triggeredBy="#avatar-menu">
-		<!-- <DropdownHeader>
+	{#if pb.authStore.isValid}
+		<Dropdown placement="bottom" triggeredBy="#avatar-menu">
+			<!-- <DropdownHeader>
 			<span class="block text-sm">Bonnie Green</span>
 			<span class="block truncate text-sm font-medium">name@flowbite.com</span>
 		</DropdownHeader> -->
-		<DropdownGroup>
-			<DropdownItem>Dashboard</DropdownItem>
-			<DropdownItem>Settings</DropdownItem>
-			<DropdownItem>Earnings</DropdownItem>
-		</DropdownGroup>
-		<DropdownItem onclick={SignOut}>Sign out</DropdownItem>
-	</Dropdown>
+			<DropdownGroup>
+				<!-- <DropdownItem>Dashboard</DropdownItem> -->
+				<DropdownItem href="/settings">Settings</DropdownItem>
+				<!-- <DropdownItem>Earnings</DropdownItem> -->
+			</DropdownGroup>
+			<DropdownItem onclick={SignOut}>Sign out</DropdownItem>
+		</Dropdown>
+	{/if}
+
 	<NavUl>
 		<NavLi href="/img_gen">Image Gen</NavLi>
 		<NavLi href="/upscale_runners">Upscale Runners</NavLi>

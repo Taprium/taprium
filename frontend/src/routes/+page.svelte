@@ -3,6 +3,10 @@
 	import { Card, Hr } from 'flowbite-svelte';
 </script>
 
+<svelte:head>
+	<title>AI Shared</title>
+</svelte:head>
+
 <Section>
 	<div class="grid grid-cols-1 gap-2 md:grid-cols-4">
 		<Card href="/img_gen" class="p-4 sm:p-6 md:p-8">
