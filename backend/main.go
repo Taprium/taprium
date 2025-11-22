@@ -10,6 +10,7 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 
+	"ai-shared/cf-image-request/hooks"
 	_ "ai-shared/cf-image-request/migrations"
 )
 
@@ -25,11 +26,17 @@ func main() {
 		Automigrate: isGoRun,
 	})
 
+	app.Cron().MustAdd("process generation", "* * * * *", func() {
+		hooks.GenerationRecover(app)
+	})
+
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		app.Settings().Batch.Enabled = true
 		app.Settings().Batch.MaxRequests = 100
 		// serves static files from the provided public dir (if exists)
 		se.Router.GET("/{path...}", apis.Static(os.DirFS("./pb_public"), false))
+
+		// hooks.GenerationRecover(app)
 
 		return se.Next()
 	})
