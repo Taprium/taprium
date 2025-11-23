@@ -122,6 +122,9 @@ func generateImage(app *pocketbase.PocketBase, queueRecord *core.Record) {
 		return
 	}
 
+	queueRecord.Set("status", "processing")
+	app.Save(queueRecord)
+
 	generatedImages, err := app.FindRecordsByFilter("generated_images", "queue={:queueId}", "", 0, 0, dbx.Params{
 		"queueId": queueRecord.Id,
 	})
@@ -153,6 +156,9 @@ func generateImage(app *pocketbase.PocketBase, queueRecord *core.Record) {
 			log.Printf("Failed to add create new image record: %v", err)
 		}
 	}
+
+	queueRecord.Set("status", "finished")
+	app.Save(queueRecord)
 }
 
 func GenerationRecover(app *pocketbase.PocketBase) {
