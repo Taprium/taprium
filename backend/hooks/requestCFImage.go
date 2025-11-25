@@ -116,9 +116,17 @@ func requestQueue(record *core.Record) ([]byte, error) {
 
 }
 
-func generateImage(app *pocketbase.PocketBase, queueRecord *core.Record) {
+func GenerateImage(app *pocketbase.PocketBase, queueRecord *core.Record) {
 	if CloudFlareAIAPIToken == "" || CloudFlareAIAccID == "" {
 		log.Println("Cloudflare credentials not set!")
+		return
+	}
+
+	fileLock := flock.New("/var/lock/generate.lock")
+
+	locked, err := fileLock.TryLock()
+	if err != nil || !locked {
+		log.Printf("Generation processing.")
 		return
 	}
 
@@ -159,26 +167,20 @@ func generateImage(app *pocketbase.PocketBase, queueRecord *core.Record) {
 
 	queueRecord.Set("status", "finished")
 	app.Save(queueRecord)
+
+	if locked {
+		fileLock.Unlock()
+	}
 }
 
 func GenerationRecover(app *pocketbase.PocketBase) {
-	fileLock := flock.New("/var/lock/generate.lock")
-
-	locked, err := fileLock.TryLock()
-	if err != nil || !locked {
-		log.Printf("Generation processing.")
-		return
-	}
 
 	unfinishedQueues, err := app.FindRecordsByFilter("generate_queues", "status='queue' || status='processing'", "", 0, 0)
 	if err != nil {
 		log.Printf("Failed to find unfinished queues: %v", err)
 	}
 	for _, uq := range unfinishedQueues {
-		generateImage(app, uq)
+		GenerateImage(app, uq)
 	}
 
-	if locked {
-		fileLock.Unlock()
-	}
 }
