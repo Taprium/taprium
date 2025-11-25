@@ -10,8 +10,8 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 
-	"ai-shared/cf-image-request/hooks"
-	_ "ai-shared/cf-image-request/migrations"
+	"taprium/backend/hooks"
+	_ "taprium/backend/migrations"
 )
 
 func main() {
