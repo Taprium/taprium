@@ -1,4 +1,4 @@
-FROM node:22-alpine AS fe-builder
+FROM node:22 AS fe-builder
 COPY frontend/ /app
 WORKDIR /app
 ENV PUBLIC_PB_ADDR="/"
