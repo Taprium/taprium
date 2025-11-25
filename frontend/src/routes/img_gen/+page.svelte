@@ -73,7 +73,7 @@
 </script>
 
 <svelte:head>
-	<title>Image Generation Queues | AI Shared</title>
+	<title>Image Generation Queues | Taprium</title>
 </svelte:head>
 
 <Section>

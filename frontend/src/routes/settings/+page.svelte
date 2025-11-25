@@ -33,7 +33,7 @@
 </script>
 
 <svelte:head>
-	<title>Settings - AI Shared</title>
+	<title>Settings - Taprium</title>
 </svelte:head>
 
 <Section>

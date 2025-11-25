@@ -83,7 +83,7 @@
 </script>
 
 <svelte:head>
-	<title>View Queue | AI Shared</title>
+	<title>View Queue | Taprium</title>
 </svelte:head>
 
 <Section>

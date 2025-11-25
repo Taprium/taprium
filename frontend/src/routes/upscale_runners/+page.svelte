@@ -95,7 +95,7 @@
 </script>
 
 <svelte:head>
-	<title>Upscale Runners - AI Shared</title>
+	<title>Upscale Runners - Taprium</title>
 </svelte:head>
 
 <Section>

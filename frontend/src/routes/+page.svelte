@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-	<title>AI Shared</title>
+	<title>Taprium</title>
 </svelte:head>
 
 <Section>
