@@ -153,7 +153,7 @@
 				<Card class="p-2">
 					<Img
 						id={i.id}
-						src={`${PUBLIC_PB_ADDR}/api/files/${PB_COLLECTION_GENERATED_IMAGES}/${i.id}/${i.image}`}
+						src={`${PUBLIC_PB_ADDR.replace(/\/+$/, '')}/api/files/${PB_COLLECTION_GENERATED_IMAGES}/${i.id}/${i.image}`}
 					/>
 
 					{#if i.upscaled}
