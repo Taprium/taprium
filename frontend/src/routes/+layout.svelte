@@ -6,7 +6,6 @@
 		Button,
 		Dropdown,
 		DropdownGroup,
-		DropdownHeader,
 		DropdownItem,
 		Navbar,
 		NavBrand,
@@ -26,7 +25,7 @@
 	}
 
 	$effect(() => {
-		if (!pb.authStore.isValid && page.url.pathname != '/login') {
+		if (!pb.authStore.isValid && page.url.pathname != '/login/') {
 			goto('/login');
 		}
 	});
