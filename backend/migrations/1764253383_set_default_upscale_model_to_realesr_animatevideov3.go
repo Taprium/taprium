@@ -17,8 +17,10 @@ func init() {
 
 		log.Println("Generating default settings")
 
-		generationSettingsRecord.Set("upscale_model", "realesr-animevideov3")
-		app.Save(generationSettingsRecord)
+		if generationSettingsRecord.Get("upscale_model") == "realesr-animevideov3-x2" {
+			generationSettingsRecord.Set("upscale_model", "realesr-animevideov3")
+			app.Save(generationSettingsRecord)
+		}
 
 		return nil
 	}, func(app core.App) error {
