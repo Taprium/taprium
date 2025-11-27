@@ -16,7 +16,7 @@
 		Toggle
 	} from 'flowbite-svelte';
 	import { Section } from 'flowbite-svelte-blocks';
-	import { EyeOutline, EyeSlashOutline } from 'flowbite-svelte-icons';
+	import { EyeOutline, EyeSlashOutline, RefreshOutline } from 'flowbite-svelte-icons';
 	import type { RecordModel } from 'pocketbase';
 	import { onMount } from 'svelte';
 
@@ -101,16 +101,28 @@
 <Section>
 	<div class="flex items-center justify-between">
 		<Heading class="mb-5 text-green-600">Upscale Runners</Heading>
-		<Button
-			onclick={() => {
-				addRunnerNameValue = '';
-				addRunnerPasswordValue = '';
-				addRunnerPasswordConfirmValue = '';
-				addRunnerError = '';
-				addRunnerShowPassword = false;
-				showAddRunnerModal = true;
-			}}>Add</Button
-		>
+		<div class="flex items-end gap-2">
+			<Button
+				color="alternative"
+				onclick={() => {
+					GetRunners();
+				}}
+			>
+				<RefreshOutline />
+			</Button>
+			<Button
+				onclick={() => {
+					addRunnerNameValue = '';
+					addRunnerPasswordValue = '';
+					addRunnerPasswordConfirmValue = '';
+					addRunnerError = '';
+					addRunnerShowPassword = false;
+					showAddRunnerModal = true;
+				}}
+			>
+				Add
+			</Button>
+		</div>
 	</div>
 
 	<Table>
@@ -127,7 +139,7 @@
 					<TableBodyCell>
 						<Badge color={r.enabled ? 'green' : 'red'}>{r.enabled}</Badge>
 					</TableBodyCell>
-					<TableBodyCell>{r.pinged_at}</TableBodyCell>
+					<TableBodyCell>{new Date(r.pinged_at)}</TableBodyCell>
 					<TableBodyCell>
 						{#if r.enabled}
 							<Button
