@@ -139,7 +139,7 @@
 					<TableBodyCell>
 						<Badge color={r.enabled ? 'green' : 'red'}>{r.enabled}</Badge>
 					</TableBodyCell>
-					<TableBodyCell>{new Date(r.pinged_at)}</TableBodyCell>
+					<TableBodyCell>{r.pinged_at ? new Date(r.pinged_at) : '-'}</TableBodyCell>
 					<TableBodyCell>
 						{#if r.enabled}
 							<Button
