@@ -116,6 +116,7 @@
 					addRunnerPasswordValue = '';
 					addRunnerPasswordConfirmValue = '';
 					addRunnerError = '';
+					addRunnerEnabled = false;
 					addRunnerShowPassword = false;
 					showAddRunnerModal = true;
 				}}
