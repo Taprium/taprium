@@ -16,10 +16,10 @@ RUN go build -o /bin/pocketbase
 FROM alpine:latest
 
 WORKDIR /pb
-COPY --from=be-builder /bin/pocketbase ./
+COPY --from=be-builder /bin/taprium ./
 COPY --from=fe-builder /app/build ./pb_public
 
 EXPOSE 8080
 VOLUME [ "/pb/pb_data" ]
 
-CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8080"]
+CMD ["/pb/taprium", "serve", "--http=0.0.0.0:8080"]
