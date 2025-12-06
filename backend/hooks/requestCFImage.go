@@ -42,7 +42,7 @@ type WorkerAIResponse struct {
 var CloudFlareAIAccID = os.Getenv("CF_ACCID")
 var CloudFlareAIAPIToken = os.Getenv("CF_API_TOKEN")
 
-func requestQueue(record *core.Record) ([]byte, error) {
+func requestImages(record *core.Record) ([]byte, error) {
 
 	const modelName = "@cf/black-forest-labs/flux-1-schnell"
 
@@ -122,13 +122,18 @@ func GenerateImage(app *pocketbase.PocketBase, queueRecord *core.Record) {
 		return
 	}
 
-	fileLock := flock.New("/var/lock/generate.lock")
+	fileLock := flock.New("/var/lock/image.lock")
 
 	locked, err := fileLock.TryLock()
 	if err != nil || !locked {
 		log.Printf("Generation processing.")
 		return
 	}
+	defer func() {
+		if locked {
+			fileLock.Unlock()
+		}
+	}()
 
 	queueRecord.Set("status", "processing")
 	app.Save(queueRecord)
@@ -150,7 +155,7 @@ func GenerateImage(app *pocketbase.PocketBase, queueRecord *core.Record) {
 	}
 
 	for range toGenCount {
-		imgBytes, err := requestQueue(queueRecord)
+		imgBytes, err := requestImages(queueRecord)
 		if err != nil {
 			log.Printf("Failed to send image generation request: %v", err)
 			return
@@ -173,9 +178,9 @@ func GenerateImage(app *pocketbase.PocketBase, queueRecord *core.Record) {
 	}
 }
 
-func GenerationRecover(app *pocketbase.PocketBase) {
+func ImageGenerationRecover(app *pocketbase.PocketBase) {
 
-	unfinishedQueues, err := app.FindRecordsByFilter("generate_queues", "status='queue' || status='processing'", "", 0, 0)
+	unfinishedQueues, err := app.FindRecordsByFilter("image_queues", "status='queue' || status='processing'", "", 0, 0)
 	if err != nil {
 		log.Printf("Failed to find unfinished queues: %v", err)
 	}

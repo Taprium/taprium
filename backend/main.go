@@ -27,21 +27,16 @@ func main() {
 		Automigrate: isGoRun,
 	})
 
-	app.OnRecordAfterUpdateSuccess("generate_queues").BindFunc(func(e *core.RecordEvent) error {
+	app.OnRecordAfterCreateSuccess("image_queues").BindFunc(func(e *core.RecordEvent) error {
 		go func() {
-			if e.Record.GetString("status") == "queue" || e.Record.GetString("status") == "processing" {
-				hooks.GenerateImage(app, e.Record)
-			}
+			hooks.GenerateImage(app, e.Record)
 		}()
-
 		return e.Next()
 	})
 
-	app.OnRecordAfterCreateSuccess("generate_queues").BindFunc(func(e *core.RecordEvent) error {
+	app.OnRecordAfterCreateSuccess("prompt_queues").BindFunc(func(e *core.RecordEvent) error {
 		go func() {
-			if e.Record.GetString("status") == "queue" || e.Record.GetString("status") == "processing" {
-				hooks.GenerateImage(app, e.Record)
-			}
+			hooks.GenerateText(app, e.Record)
 		}()
 		return e.Next()
 	})
@@ -57,7 +52,7 @@ func main() {
 	})
 
 	app.Cron().MustAdd("img-gen-recovery", "* * * * *", func() {
-		hooks.GenerationRecover(app)
+		hooks.ImageGenerationRecover(app)
 	})
 
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
@@ -66,7 +61,10 @@ func main() {
 		// serves static files from the provided public dir (if exists)
 		se.Router.GET("/{path...}", apis.Static(os.DirFS("./pb_public"), false))
 
-		hooks.GenerationRecover(app)
+		go func() {
+			hooks.ImageGenerationRecover(app)
+			hooks.TextGenerationRecover(app)
+		}()
 
 		return se.Next()
 	})
