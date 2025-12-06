@@ -34,7 +34,7 @@ func main() {
 		return e.Next()
 	})
 
-	app.OnRecordAfterCreateSuccess("prompt_queues").BindFunc(func(e *core.RecordEvent) error {
+	app.OnRecordAfterCreateSuccess("text_queues").BindFunc(func(e *core.RecordEvent) error {
 		go func() {
 			hooks.GenerateText(app, e.Record)
 		}()
