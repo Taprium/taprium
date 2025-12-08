@@ -89,7 +89,7 @@ func requestImages(record *core.Record) ([]byte, error) {
 	// --- 3. Handle JSON Response ---
 	if resp.StatusCode != http.StatusOK {
 		bodyBytes, _ := io.ReadAll(resp.Body)
-		fmt.Printf("API request failed with status code %d. Response: %s\n", resp.StatusCode, string(bodyBytes))
+		fmt.Printf("[%s] API request failed with status code %d. Response: %s\n", record.Id, resp.StatusCode, string(bodyBytes))
 		return nil, err
 	}
 
@@ -160,6 +160,11 @@ func GenerateImage(app *pocketbase.PocketBase, queueRecord *core.Record) {
 			log.Printf("Failed to send image generation request: %v", err)
 			return
 		}
+		if len(imgBytes) == 0 {
+			log.Printf("Could not get image from cloudflare")
+			return
+		}
+
 		newRecord := core.NewRecord(generatedImageCollection)
 		newRecord.Set("queue", queueRecord.Id)
 		imgFile, _ := filesystem.NewFileFromBytes(imgBytes, fmt.Sprintf("%s.png", uuid.New().String()))

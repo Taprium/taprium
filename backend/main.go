@@ -55,6 +55,10 @@ func main() {
 		hooks.ImageGenerationRecover(app)
 	})
 
+	app.Cron().MustAdd("text-gen-recovery", "* * * * *", func() {
+		hooks.TextGenerationRecover(app)
+	})
+
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		app.Settings().Batch.Enabled = true
 		app.Settings().Batch.MaxRequests = 100
