@@ -55,7 +55,7 @@ func requestText(prompt string) (string, error) {
 	// Extract the response text
 	if res, ok := result["result"].(map[string]interface{}); ok {
 		if response, ok := res["response"].(string); ok {
-			log.Printf("Failed to generate Cloudflare Text: %v", err)
+			// log.Printf("Failed to generate Cloudflare Text: %v", err)
 			return response, nil
 		}
 	}
@@ -103,7 +103,7 @@ func GenerateText(app *pocketbase.PocketBase, queueRecord *core.Record) {
 
 func TextGenerationRecover(app *pocketbase.PocketBase) {
 
-	unfinishedQueues, err := app.FindRecordsByFilter("prompt_queues", "status='queue' || status='processing'", "", 0, 0)
+	unfinishedQueues, err := app.FindRecordsByFilter("text_queues", " status='' || status='queue' || status='processing'", "", 0, 0)
 	if err != nil {
 		log.Printf("Failed to find unfinished queues: %v", err)
 	}

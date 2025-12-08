@@ -11,7 +11,7 @@ WORKDIR /src
 COPY backend/main.go backend/go.mod backend/go.sum  ./
 COPY backend/migrations ./migrations
 COPY backend/hooks ./hooks
-RUN go build -o /bin/pocketbase
+RUN go build -o /bin/taprium
 
 FROM alpine:latest
 
