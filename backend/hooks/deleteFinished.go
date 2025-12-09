@@ -37,7 +37,7 @@ func DeleteFinishedQueuesCheck(app *pocketbase.PocketBase) {
 	}
 
 	if settingsRecord.GetBool("delete_finished_text_queues") {
-		textQueueRecords, err := app.FindRecordsByFilter("text_queues", "result!=''", "", 0, 0)
+		textQueueRecords, err := app.FindRecordsByFilter("text_queues", "result!='' && user_confirmed=true", "", 0, 0)
 		if err != nil {
 			log.Printf("Failed to find finished text queues: %v", err)
 			return
