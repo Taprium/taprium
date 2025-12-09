@@ -30,6 +30,7 @@ func main() {
 	app.OnRecordAfterCreateSuccess("image_queues").BindFunc(func(e *core.RecordEvent) error {
 		go func() {
 			hooks.GenerateImage(app, e.Record)
+			hooks.ImageGenerationRecover(app)
 		}()
 		return e.Next()
 	})
@@ -37,6 +38,7 @@ func main() {
 	app.OnRecordAfterCreateSuccess("text_queues").BindFunc(func(e *core.RecordEvent) error {
 		go func() {
 			hooks.GenerateText(app, e.Record)
+			hooks.TextGenerationRecover(app)
 		}()
 		return e.Next()
 	})
