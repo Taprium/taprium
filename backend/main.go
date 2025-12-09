@@ -61,6 +61,10 @@ func main() {
 		hooks.TextGenerationRecover(app)
 	})
 
+	app.Cron().MustAdd("delete-finished-check", "* * * * *", func() {
+		hooks.DeleteFinishedQueuesCheck(app)
+	})
+
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		app.Settings().Batch.Enabled = true
 		app.Settings().Batch.MaxRequests = 100
