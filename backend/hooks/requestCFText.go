@@ -73,7 +73,7 @@ func GenerateText(app *pocketbase.PocketBase, queueRecord *core.Record) {
 
 	locked, err := fileLock.TryLock()
 	if err != nil || !locked {
-		log.Printf("Generation processing.")
+		// log.Printf("Generation processing.")
 		return
 	}
 	defer func() {

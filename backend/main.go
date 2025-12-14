@@ -38,7 +38,7 @@ func main() {
 	app.OnRecordAfterCreateSuccess("text_queues").BindFunc(func(e *core.RecordEvent) error {
 		go func() {
 			hooks.GenerateText(app, e.Record)
-			hooks.TextGenerationRecover(app)
+			// hooks.TextGenerationRecover(app)
 		}()
 		return e.Next()
 	})
