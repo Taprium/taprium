@@ -38,7 +38,7 @@ func main() {
 	app.OnRecordAfterCreateSuccess("text_queues").BindFunc(func(e *core.RecordEvent) error {
 		go func() {
 			hooks.GenerateText(app, e.Record)
-			// hooks.TextGenerationRecover(app)
+			hooks.TextGenerationRecover(app)
 		}()
 		return e.Next()
 	})
@@ -63,6 +63,10 @@ func main() {
 
 	app.Cron().MustAdd("delete-finished-check", "* * * * *", func() {
 		hooks.DeleteFinishedQueuesCheck(app)
+	})
+
+	app.Cron().MustAdd("upscale-timeout-check", "* * * * *", func() {
+		hooks.ResetUpscaleTimeout(app)
 	})
 
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
