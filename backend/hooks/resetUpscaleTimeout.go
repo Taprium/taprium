@@ -33,7 +33,7 @@ func ResetUpscaleTimeout(app *pocketbase.PocketBase) {
 		return
 	}
 
-	timeoutRecords, err := app.FindRecordsByFilter("generated_images", "selected=true && upscaled=true && runner !='' updated<{:timeoutTimestap} ", "", 0, 0,
+	timeoutRecords, err := app.FindRecordsByFilter("generated_images", "selected=true && upscaled=false && runner !='' && updated<{:timeoutTimestap} ", "", 0, 0,
 		dbx.Params{
 			"timeoutTimestap": time.Now().Add(-time.Duration(settingsRecord.GetInt("upscale_timeout_in_second") * int(time.Second))),
 		})
