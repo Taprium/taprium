@@ -37,7 +37,7 @@
 
 	async function handleEnabled(id: string, value: boolean) {
 		await pb.collection(PB_COLLECTION_UPSCALE_RUNNERS).update(id, {
-			enabled: value
+			verified: value
 		});
 		GetRunners();
 	}
@@ -138,11 +138,11 @@
 				<TableBodyRow>
 					<TableBodyCell>{r.name}</TableBodyCell>
 					<TableBodyCell>
-						<Badge color={r.enabled ? 'green' : 'red'}>{r.enabled}</Badge>
+						<Badge color={r.verified ? 'green' : 'red'}>{r.verified}</Badge>
 					</TableBodyCell>
 					<TableBodyCell>{r.pinged_at ? new Date(r.pinged_at) : '-'}</TableBodyCell>
 					<TableBodyCell>
-						{#if r.enabled}
+						{#if r.verified}
 							<Button
 								onclick={() => {
 									handleEnabled(r.id, false);

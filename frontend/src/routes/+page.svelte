@@ -4,7 +4,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import {
 		pb,
-		PB_COLLECTION_GENERATE_QUEUES,
+		PB_COLLECTION_IMAGE_QUEUES,
 		PB_COLLECTION_GENERATED_IMAGES,
 		PB_COLLECTION_UPSCALE_RUNNERS
 	} from '$lib/pb/backend-pb';
@@ -15,7 +15,7 @@
 	let upscaleRunnerData = $state<RecordModel[]>();
 
 	async function GetImageGenerationData() {
-		toGenerateImages = await pb.collection(PB_COLLECTION_GENERATE_QUEUES).getFullList({
+		toGenerateImages = await pb.collection(PB_COLLECTION_IMAGE_QUEUES).getFullList({
 			filter: 'status="queue" || status="processing"'
 		});
 	}

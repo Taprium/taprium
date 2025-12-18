@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import CSRPagination from '$lib/components/CSRPagination.svelte';
-	import { pb, PB_COLLECTION_GENERATE_QUEUES } from '$lib/pb/backend-pb';
+	import { pb, PB_COLLECTION_IMAGE_QUEUES } from '$lib/pb/backend-pb';
 	import { GetDefaultSettings } from '$lib/pb/default-settings';
 	import {
 		Badge,
@@ -34,7 +34,7 @@
 		loading = true;
 
 		pageIndex = parseInt(page.url.searchParams.get('page') ?? '1');
-		queues = await pb.collection(PB_COLLECTION_GENERATE_QUEUES).getList(pageIndex, 20, {
+		queues = await pb.collection(PB_COLLECTION_IMAGE_QUEUES).getList(pageIndex, 20, {
 			filter: '',
 			expand: 'generated_images_via_queue',
 			sort: '-updated'
@@ -60,7 +60,7 @@
 	async function HandleAddQueue(e: SubmitEvent) {
 		e.preventDefault();
 		addQueueLoading = true;
-		let record = await pb.collection(PB_COLLECTION_GENERATE_QUEUES).create({
+		let record = await pb.collection(PB_COLLECTION_IMAGE_QUEUES).create({
 			positive_prompt: addQueuePositive,
 			negative_prompt: addQueueNegative,
 			number: addQueueNumber,

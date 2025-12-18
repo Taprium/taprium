@@ -3,7 +3,7 @@
 	import { PUBLIC_PB_ADDR } from '$env/static/public';
 	import {
 		pb,
-		PB_COLLECTION_GENERATE_QUEUES,
+		PB_COLLECTION_IMAGE_QUEUES,
 		PB_COLLECTION_GENERATED_IMAGES
 	} from '$lib/pb/backend-pb';
 	import { GetDefaultSettings } from '$lib/pb/default-settings';
@@ -33,7 +33,7 @@
 		loading = true;
 		let id = page.url.searchParams.get('id') ?? '';
 		try {
-			queueData = await pb.collection(PB_COLLECTION_GENERATE_QUEUES).getOne(id, {
+			queueData = await pb.collection(PB_COLLECTION_IMAGE_QUEUES).getOne(id, {
 				expand: 'generated_images_via_queue'
 			});
 		} catch {}
@@ -71,7 +71,7 @@
 				batch.collection(PB_COLLECTION_GENERATED_IMAGES).delete(element.id);
 			}
 		});
-		batch.collection(PB_COLLECTION_GENERATE_QUEUES).update(queueData!.id, {
+		batch.collection(PB_COLLECTION_IMAGE_QUEUES).update(queueData!.id, {
 			user_confirmed_upscale: true,
 			upscale_times: upscaleTimes
 		});
