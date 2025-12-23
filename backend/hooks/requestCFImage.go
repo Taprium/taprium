@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gofrs/flock"
@@ -42,6 +43,8 @@ type WorkerAIResponse struct {
 
 var CloudFlareAIAccID = os.Getenv("CF_ACCID")
 var CloudFlareAIAPIToken = os.Getenv("CF_API_TOKEN")
+
+var CloudFlareImageRequestTimeOut = os.Getenv("CF_IMG_TIMEOUT")
 
 func requestImages(record *core.Record) ([]byte, error) {
 
@@ -79,7 +82,14 @@ func requestImages(record *core.Record) ([]byte, error) {
 	req.Header.Set("Content-Type", "application/json")
 
 	// --- 2. Execute API Call ---
-	client := &http.Client{Timeout: 30 * time.Second}
+
+	client := &http.Client{}
+	if len(CloudFlareImageRequestTimeOut) > 0 {
+		seconds, err := strconv.Atoi(CloudFlareImageRequestTimeOut)
+		if err == nil {
+			client = &http.Client{Timeout: time.Duration(seconds) * time.Second}
+		}
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Printf("Error sending request to Cloudflare: %v\n", err)
