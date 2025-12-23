@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gofrs/flock"
 	"github.com/google/uuid"
@@ -78,7 +79,7 @@ func requestImages(record *core.Record) ([]byte, error) {
 	req.Header.Set("Content-Type", "application/json")
 
 	// --- 2. Execute API Call ---
-	client := &http.Client{}
+	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Printf("Error sending request to Cloudflare: %v\n", err)
