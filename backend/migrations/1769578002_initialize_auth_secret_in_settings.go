@@ -1,8 +1,11 @@
 package migrations
 
 import (
+	"os"
+
 	"github.com/pocketbase/pocketbase/core"
 	m "github.com/pocketbase/pocketbase/migrations"
+	"github.com/pocketbase/pocketbase/tools/security"
 )
 
 func init() {
@@ -12,12 +15,15 @@ func init() {
 		if defaultSettings == nil {
 			return nil
 		}
+		// 2. Determine initial secret
+		secret := os.Getenv("CLUSTER_SECRET")
+		if secret == "" {
+			secret = security.RandomString(32)
+		}
 
-		defaultSettings.Set("delete_finished_image_queues", false)
-		defaultSettings.Set("delete_finished_text_queues", false)
+		defaultSettings.Set("auth_secret", secret)
 
 		return app.Save(defaultSettings)
-
 	}, func(app core.App) error {
 		// add down queries...
 
