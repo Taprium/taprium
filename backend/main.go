@@ -54,6 +54,41 @@ func main() {
 		return e.Next()
 	})
 
+	app.Cron().MustAdd("cluster-online-sync", "*/5 * * * *", func() {
+		clients := app.SubscriptionsBroker().Clients()
+
+		// Track unique device IDs
+		activeIds := []string{}
+		seen := make(map[string]bool)
+
+		for _, client := range clients {
+			// Get the auth record linked to the SSE connection
+			if auth, ok := client.Get(apis.RealtimeClientAuthKey).(*core.Record); ok {
+				// Ensure the record is from your 'devices' collection
+				if auth.Collection().Name == "upscale_runners" && !seen[auth.Id] {
+					activeIds = append(activeIds, auth.Id)
+					seen[auth.Id] = true
+				}
+			}
+		}
+
+		if len(activeIds) > 0 {
+			app.RunInTransaction(func(txApp core.App) error {
+				for _, id := range activeIds {
+					checkerRecord, err := app.FindRecordById("upscale_runners", id)
+					if err != nil {
+						return err
+					}
+					checkerRecord.Set("last_seen", time.Now())
+					if err := txApp.Save(checkerRecord); err != nil {
+						return err
+					}
+				}
+				return nil
+			})
+		}
+	})
+
 	app.Cron().MustAdd("img-gen-recovery", "* * * * *", func() {
 		hooks.ImageGenerationRecover(app)
 	})
@@ -121,6 +156,8 @@ func main() {
 			}
 
 			token, err := device.NewAuthToken()
+			device.Set("last_seen", time.Now())
+			app.Save(device)
 			if err != nil {
 				return e.InternalServerError("Failed to generate token", err)
 			}
