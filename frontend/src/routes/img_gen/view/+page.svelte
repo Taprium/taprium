@@ -28,11 +28,13 @@
 	let loading = $state(false);
 	let queueData = $state<RecordModel>();
 	let defaultSettings = $state<RecordModel>();
+	let fileToken = $state('');
 
 	async function GetQueueData() {
 		loading = true;
 		let id = page.url.searchParams.get('id') ?? '';
 		try {
+			fileToken = await pb.files.getToken();
 			queueData = await pb.collection(PB_COLLECTION_IMAGE_QUEUES).getOne(id, {
 				expand: 'generated_images_via_queue'
 			});
@@ -153,7 +155,7 @@
 				<Card class="p-2">
 					<Img
 						id={i.id}
-						src={`${PUBLIC_PB_ADDR.replace(/\/+$/, '')}/api/files/${PB_COLLECTION_GENERATED_IMAGES}/${i.id}/${i.image}`}
+						src={`${PUBLIC_PB_ADDR.replace(/\/+$/, '')}/api/files/${PB_COLLECTION_GENERATED_IMAGES}/${i.id}/${i.image}?token=${fileToken}`}
 					/>
 
 					{#if i.upscaled}

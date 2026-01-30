@@ -140,7 +140,7 @@
 					<TableBodyCell>
 						<Badge color={r.verified ? 'green' : 'red'}>{r.verified}</Badge>
 					</TableBodyCell>
-					<TableBodyCell>{r.pinged_at ? new Date(r.pinged_at) : '-'}</TableBodyCell>
+					<TableBodyCell>{r.last_seen ? new Date(r.last_seen) : '-'}</TableBodyCell>
 					<TableBodyCell>
 						{#if r.verified}
 							<Button

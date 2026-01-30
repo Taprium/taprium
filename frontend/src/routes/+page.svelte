@@ -30,7 +30,7 @@
 		upscaleRunnerData = await pb.collection(PB_COLLECTION_UPSCALE_RUNNERS).getFullList({});
 		upscaleRunnerValidTime = new Date();
 		upscaleRunnerValidTime.setMinutes(upscaleRunnerValidTime.getMinutes() - 1);
-		console.log(upscaleRunnerValidTime);
+		// console.log(upscaleRunnerValidTime);
 	}
 
 	let interval: NodeJS.Timeout;
