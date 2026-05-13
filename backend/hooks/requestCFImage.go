@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gofrs/flock"
 	"github.com/google/uuid"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
@@ -133,18 +132,18 @@ func GenerateImage(app *pocketbase.PocketBase, queueRecord *core.Record) {
 		return
 	}
 
-	fileLock := flock.New("/var/lock/image.lock")
+	// fileLock := flock.New("/var/lock/image.lock")
 
-	locked, err := fileLock.TryLock()
-	if err != nil || !locked {
-		// log.Printf("Generation processing.")
-		return
-	}
-	defer func() {
-		if locked {
-			fileLock.Unlock()
-		}
-	}()
+	// locked, err := fileLock.TryLock()
+	// if err != nil || !locked {
+	// 	// log.Printf("Generation processing.")
+	// 	return
+	// }
+	// defer func() {
+	// 	if locked {
+	// 		fileLock.Unlock()
+	// 	}
+	// }()
 
 	queueRecord.Set("status", "processing")
 	app.Save(queueRecord)
@@ -189,9 +188,9 @@ func GenerateImage(app *pocketbase.PocketBase, queueRecord *core.Record) {
 	queueRecord.Set("status", "finished")
 	app.Save(queueRecord)
 
-	if locked {
-		fileLock.Unlock()
-	}
+	// if locked {
+	// 	fileLock.Unlock()
+	// }
 }
 
 func ImageGenerationRecover(app *pocketbase.PocketBase) {
