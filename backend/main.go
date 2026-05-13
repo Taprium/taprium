@@ -176,6 +176,23 @@ func main() {
 			})
 		})
 
+		se.Router.GET("/select-options/{collection}", func(e *core.RequestEvent) error {
+			collectionName := e.Request.PathValue("collection")
+
+			collection, err := app.FindCollectionByNameOrId(collectionName)
+			if err != nil {
+				return e.NotFoundError("collection with name %s does not exists", collectionName)
+			}
+
+			result := map[string]any{}
+			for _, f := range collection.Fields {
+				if f.Type() == "select" {
+					result[f.GetName()] = f.(*core.SelectField).Values
+				}
+			}
+			return e.JSON(200, result)
+		})
+
 		go func() {
 			hooks.ImageGenerationRecover(app)
 			hooks.TextGenerationRecover(app)
