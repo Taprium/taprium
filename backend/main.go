@@ -30,8 +30,17 @@ func main() {
 
 	app.OnRecordAfterCreateSuccess("image_queues").BindFunc(func(e *core.RecordEvent) error {
 		go func() {
-			hooks.GenerateImage(app, e.Record)
-			hooks.ImageGenerationRecover(app)
+			settingsRecord, err := app.FindFirstRecordByFilter("settings", "")
+			if err != nil {
+				log.Printf("Failed to find settings record: %v", err)
+				return
+			}
+			imageBackend := settingsRecord.GetString("image_backend")
+			if len(imageBackend) == 0 || imageBackend == "cloudflare-worker-ai" {
+				hooks.GenerateImage(app, e.Record)
+				// hooks.GenerateImage(app, e.Record)
+				// hooks.ImageGenerationRecover(app)
+			}
 		}()
 		return e.Next()
 	})
